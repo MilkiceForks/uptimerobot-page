@@ -7,12 +7,14 @@ services:
     environment: 
       - PORT=3000
       - LOG_LEVEL=info
-      - CRON_TIME="*/1 * * * *"
+      - CRON_TIME=*/1 * * * *
       - UPTIME_ROBOT_API=
       - UPTIME_ROBOT_NAME_PATTERN=%group/%name
       - WEBSITE_TITLE=
       - WEBSITE_COPYRIGHT=
-    volumes: 
-      - ./config:/app/config
+    # To use config file for more flexible configure,
+    # please uncomment next block
+    # volumes: 
+    #   - ./config:/app/config
     ports: 
       - 127.0.0.1:8082:3000
