@@ -15,6 +15,12 @@ export function createAPP() {
   // mount config to koa ctx
   const config = mountConfig(app);
 
+  const up = new UptimeRobotService(config.get("uptimerobot.api_key"));
+  up.prefetchList(config).then(() => {
+    logger.debug("Prefetch done. ");
+  });
+
+  /*
   logger.setLevel(config.get("app.log_level"));
 
   app.use(KoaError);
@@ -45,6 +51,7 @@ export function createAPP() {
   app.use(router.routes());
 
   return app;
+  */
 }
 
 // start server

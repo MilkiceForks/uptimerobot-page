@@ -3,6 +3,8 @@ import { Cache } from "memory-cache";
 import { logger } from "../lib/logger";
 import { Parser } from "../lib/parser";
 import { format, addDays, addSeconds, startOfDay } from "date-fns";
+import { writeData } from "../lib/DynamoDBWriter.js";
+import { renderFile } from "pug";
 
 const distance = 45;
 
@@ -31,7 +33,7 @@ export default class UptimeRobotService {
     this.parser = new Parser(require("config").get("uptimerobot.pattern"));
   }
 
-  async prefetchList() {
+  async prefetchList(config) {
     let data = {
       sum: {
         // total: 0,
@@ -51,7 +53,8 @@ export default class UptimeRobotService {
          * ]
          *
          */
-      ]
+      ],
+      html: ""
     };
     const { dates, ranges } = lastDays(distance);
     const { monitors } = await this.api.getMonitors({
@@ -115,8 +118,19 @@ export default class UptimeRobotService {
     if (isIndexed) {
       data.groups.sort((a, b) => a.index - b.index);
     }
+
+    // Errors occurred when specifying a relative path thus I filled this with an absolute path
+    // TODO
+    var html = renderFile('/var/task/build/views/index.pug',{
+      data,
+      config: config.get('website')
+    });
+
+    data.html = Buffer.from(html).toString('base64');
+    return writeData(data);
+
     // cache monitors (update pre 5m)
-    return this.cache.put("monitors", data);
+    // return this.cache.put("monitors", data);
   }
 
   async list() {

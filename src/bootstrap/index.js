@@ -4,4 +4,4 @@ import { createAPP, createServer } from "./app";
 dotenv();
 
 const app = createAPP();
-createServer(app);
+//createServer(app);
